@@ -59,13 +59,19 @@ class yFinance :
     def __fileWrite (self,file):
         with open('{}/{}.csv'.format(self.pathCsv,self.symbol), "w") as filecsv:
             filecsv.writelines(str(file))
-        print("{} {} s/d {} sudah didownload\n".format(self.symbol, self.startDate, self.endDate))
-
+        
     def __valid_date (self,date):
         try:
             datetime.datetime.strptime(date, self.dateFormat)
         except ValueError:
             raise ValueError("Format tanggal salah, seharusnya YYYY-MM-DD")
+    
+    def status (self, symbol):
+
+        filePath = "{}/{}.{}.csv".format(self.pathCsv,symbol,self.market)
+        if os.path.isfile(filePath):
+            size = os.path.getsize(filePath)
+            return "{} file size {} sudah didownload.".format(symbol,"%.2f %s" % (size/1024.0, "KB"))
 
     def get_all_time(self, symbol):
         self.symbol = "{}.{}".format(symbol,self.market)
@@ -83,15 +89,3 @@ class yFinance :
         csv = self.__req()
         csv = csv.decode('utf-8')
         self.__fileWrite(csv)
-        
-
-if __name__ == "__main__" :
-    print("Program dimulai...")
-    s = yFinance()
-    
-    #s.get_all_time("GPRA")
-    for sym in listStock.list :
-        s.get_all_time(sym)
-    
-    print("Program selesai.")
-    #s.get_range("TLKM","2005-1-31","2019-10-30")
