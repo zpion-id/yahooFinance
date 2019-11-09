@@ -7,19 +7,19 @@ import datetime
 
 import listStock
 
-class yFinance :
+class YFinance :
 
     symbol = ""
-    startDate = "2000-1-1"
-    endDate = ""
+    __startDate = "2000-1-1"
+    __endDate = ""
     pathCsv = ""
     dateFormat = "%Y-%m-%d"
     market = ""
 
-    def __init__(self,pathData="csv", market="JK"):
-        self.endDate = datetime.datetime.now().strftime(self.dateFormat)
+    def __init__(self,pathData="csv", marketID="JK"):
+        self.__endDate = datetime.datetime.now().strftime(self.dateFormat)
 
-        self.market = market
+        self.market = marketID
         
         if not os.path.exists(pathData):
             os.mkdir(pathData)
@@ -35,8 +35,8 @@ class yFinance :
 
     def __req (self):
         symbol = self.symbol
-        start = self.__epochTime(self.startDate)
-        end = self.__epochTime(self.endDate)
+        start = self.__epochTime(self.__startDate)
+        end = self.__epochTime(self.__endDate)
 
         session = requests.session()
         res = session.get(
@@ -46,7 +46,7 @@ class yFinance :
         
         get_crumb = self.__regex(res.content.decode('utf-8'))
         
-        assert get_crumb
+        assert get_crumb , exit("data tidak ditemukan")
         
         crumb = json.loads(get_crumb.group(1))
         
@@ -71,7 +71,7 @@ class yFinance :
         filePath = "{}/{}.{}.csv".format(self.pathCsv,symbol,self.market)
         if os.path.isfile(filePath):
             size = os.path.getsize(filePath)
-            return "{} file size {} sudah didownload.".format(symbol,"%.2f %s" % (size/1024.0, "KB"))
+            return "{}.{}.csv file size {} sudah didownload.".format(symbol,self.market,"%.2f %s" % (size/1024.0, "KB"))
 
     def get_all_time(self, symbol):
         self.symbol = "{}.{}".format(symbol,self.market)
@@ -79,13 +79,13 @@ class yFinance :
         csv = csv.decode('utf-8')
         self.__fileWrite(csv)
 
-    def get_range(self, symbol, startDate, endDate):
+    def get_range(self, symbol, start_date, end_date):
         
         self.symbol = "{}.{}".format(symbol,self.market)
-        self.__valid_date(startDate)
-        self.__valid_date(endDate)
-        self.startDate = startDate
-        self.endDate = endDate
+        self.__valid_date(start_date)
+        self.__valid_date(end_date)
+        self.__startDate = start_date
+        self.__endDate = end_date
         csv = self.__req()
         csv = csv.decode('utf-8')
         self.__fileWrite(csv)

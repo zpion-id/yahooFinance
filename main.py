@@ -3,10 +3,10 @@ import os
 
 if __name__ == "__main__" :
     print("Program dimulai...")
-    s = yf.yFinance()
+    s = yf.YFinance()
 
-    s.get_all_time("TLKM")
-    print(s.status("TLKM"))
+    s.get_all_time("KRAS")
+    print(s.status("KRAS"))
 
     #for sym in listStock.list :
     #    s.get_all_time(sym)
